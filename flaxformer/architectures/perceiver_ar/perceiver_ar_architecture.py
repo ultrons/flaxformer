@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC.
+# Copyright 2024 Google LLC.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -402,10 +402,12 @@ def create_residuals_and_queries(
     sequence_lengths: Array) -> Tuple[Array, Array, Optional[Array], Array]:
   """Slice layer inputs to get versions to use as queries."""
   if x.shape[-2] > num_latents:
-    layer_input_residuals = slicing.slice_sequences_xmap(  # pytype: disable=wrong-arg-types  # jax-ndarray
-        layer_input, sequence_lengths, num_latents, axis_within_xmap=0)
-    x_queries = slicing.slice_sequences_xmap(  # pytype: disable=wrong-arg-types  # jax-ndarray
-        x, sequence_lengths, num_latents, axis_within_xmap=0)
+    layer_input_residuals = slicing.slice_sequences_shard_map(  # pytype: disable=wrong-arg-types  # jax-ndarray
+        layer_input, sequence_lengths, num_latents, axis_within_map=0
+    )
+    x_queries = slicing.slice_sequences_shard_map(  # pytype: disable=wrong-arg-types  # jax-ndarray
+        x, sequence_lengths, num_latents, axis_within_map=0
+    )
     query_offset = slicing.sequence_slice_start(sequence_lengths, num_latents)  # pytype: disable=wrong-arg-types  # jax-ndarray
   else:
     layer_input_residuals = layer_input

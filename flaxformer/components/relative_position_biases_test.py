@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC.
+# Copyright 2024 Google LLC.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
 from absl.testing import absltest
 import jax
 from jax import random
+from jax import tree_util
 import jax.numpy as jnp
 import numpy as np
 
@@ -54,7 +55,7 @@ class RelativePositionBiasesTest(absltest.TestCase):
     variables = self.relative_attention.init(
         random.PRNGKey(0), self.query_len, self.key_len)
     sharding.check_params_and_axis_names_match(variables)
-    for axis_names in jax.tree_leaves(sharding.get_axis_names(variables)):
+    for axis_names in tree_util.tree_leaves(sharding.get_axis_names(variables)):
       for axis_name in axis_names:
         self.assertIn(axis_name, {'relpos_heads', 'relpos_buckets'})
     expected_files.check_params_and_axes(variables['params'],
@@ -69,7 +70,7 @@ class RelativePositionBiasesTest(absltest.TestCase):
         self.key_len,
         bidirectional=True,
         mutable=['params'])
-    param_shapes = jax.tree_map(lambda x: x.shape, params)
+    param_shapes = jax.tree.map(lambda x: x.shape, params)
     self.assertEqual(param_shapes, {
         'params': {
             'rel_embedding': (3, 12),
@@ -96,7 +97,7 @@ class RelativePositionBiasesTest(absltest.TestCase):
         self.key_len,
         bidirectional=False,
         mutable=['params'])
-    param_shapes = jax.tree_map(lambda x: x.shape, params)
+    param_shapes = jax.tree.map(lambda x: x.shape, params)
     self.assertEqual(param_shapes, {
         'params': {
             'rel_embedding': (3, 12),

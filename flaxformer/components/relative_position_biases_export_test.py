@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC.
+# Copyright 2024 Google LLC.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ class RelativePositionBiasesTest(parameterized.TestCase):
         def create_var(value):
           return tf.Variable(value)
 
-        self._params = jax.tree_map(create_var, params)
+        self._params = jax.tree.map(create_var, params)
         # Use jax2tf graph serialization because test inspects the graph.
         self._apply = jax2tf.convert(apply_fn, native_serialization=False)
         self._apply = tf.autograph.experimental.do_not_convert(self._apply)

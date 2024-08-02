@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC.
+# Copyright 2024 Google LLC.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ class RelativePositionBiasesGeneralTest(absltest.TestCase):
         self.query_len, self.key_len, bidirectional=True)
     params = self.relative_attention.init(
         random.PRNGKey(0), rp_bucket, mutable=['params'])
-    param_shapes = jax.tree_map(lambda x: x.shape, params)
+    param_shapes = jax.tree.map(lambda x: x.shape, params)
     self.assertEqual(param_shapes, {
         'params': {
             'rel_embedding': (3, 12),
@@ -74,7 +74,7 @@ class RelativePositionBiasesGeneralTest(absltest.TestCase):
         self.query_len, self.key_len, bidirectional=False)
     params = self.relative_attention.init(
         random.PRNGKey(0), rp_bucket, mutable=['params'])
-    param_shapes = jax.tree_map(lambda x: x.shape, params)
+    param_shapes = jax.tree.map(lambda x: x.shape, params)
     self.assertEqual(param_shapes, {
         'params': {
             'rel_embedding': (3, 12),

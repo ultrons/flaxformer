@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC.
+# Copyright 2024 Google LLC.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ from flax import linen as nn
 from flax.core.lift import Out as ScanOut  # pylint: disable=unused-import
 from flax.linen import partitioning
 import jax
+from jax.interpreters import pxla
 from jax.lax import with_sharding_constraint as jax_pjit_wsc
 
 # TODO: this file contains JAX transform workarounds to fix/move
@@ -223,7 +224,7 @@ factory_vmap = functools.partial(apply_transform_to_module_factory, nn.vmap)
 
 def global_mesh_defined():
   """Checks if global xmap/pjit mesh resource environment is defined."""
-  maps_env = jax.experimental.maps.thread_resources.env
+  maps_env = pxla.thread_resources.env
   return maps_env.physical_mesh.devices.shape != ()  # pylint: disable=g-explicit-bool-comparison
 
 
@@ -258,7 +259,7 @@ def inner_scan_spmd(annotation_tree, scan_axis):
     tmp.pop(scan_axis)
     return type(x)(*tmp)
 
-  annotation_tree = jax.tree_map(del_axis, annotation_tree)
+  annotation_tree = jax.tree.map(del_axis, annotation_tree)
 
   def annotate_fn(variable_groups, rng_groups):
     broadcast_vars, carry_vars, *scan_variable_groups = variable_groups

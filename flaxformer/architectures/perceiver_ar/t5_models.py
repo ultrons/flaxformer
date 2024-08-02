@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC.
+# Copyright 2024 Google LLC.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -87,7 +87,7 @@ class CroppingMethod(enum.Enum):
 
 
 def crop_train_batch(
-    rng: Optional[jax.random.KeyArray],
+    rng: Optional[jax.Array],
     batch: Mapping[str, jnp.ndarray],
     cropping_method: CroppingMethod,
     num_latents: int,
@@ -139,7 +139,7 @@ def crop_train_batch(
                              last_loss_idx + 1)
   seq_crop_start = jnp.maximum(seq_crop_first_idx, 0)
 
-  batch = jax.tree_map(
+  batch = jax.tree.map(
       functools.partial(_crop_sequences, lengths=seq_crop_end), batch)
 
   # Handle the loss weights specifically to ensure that loss isn't
@@ -267,7 +267,7 @@ class PerceiverARModel(models.DecoderOnlyModel):
       self,
       params: PyTree,
       batch: Mapping[str, jnp.ndarray],
-      dropout_rng: Optional[jax.random.KeyArray],
+      dropout_rng: Optional[jax.Array],
       is_eval: bool = False,
   ) -> Tuple[jnp.ndarray, models.MetricsMap]:
     """Loss function used for training with a cross-entropy loss."""
@@ -353,7 +353,7 @@ class PerceiverARModel(models.DecoderOnlyModel):
         # position encodings.
         # The first layer is cross-attention, so don't modify it.
         if 'layer' in '/'.join(layer_name) and 'layers_0' not in layer_name:
-          layer_cache = jax.tree_map(map_fn, layer_cache)
+          layer_cache = jax.tree.map(map_fn, layer_cache)
         new_cache_by_layers[layer_name] = layer_cache
       return flax.core.freeze(traverse_util.unflatten_dict(new_cache_by_layers))
 
@@ -478,7 +478,7 @@ class PerceiverARModel(models.DecoderOnlyModel):
       self,
       params: PyTree,
       batch: Mapping[str, jnp.ndarray],
-      rng: Optional[jax.random.KeyArray] = None,
+      rng: Optional[jax.Array] = None,
       *,
       return_all_decodes: bool = False,
       num_decodes: int = 1,
@@ -701,7 +701,7 @@ class PerceiverARModel(models.DecoderOnlyModel):
       slice_end = jnp.maximum(state['slice_end'] + stride, self._num_latents)
       slice_end = jnp.minimum(slice_end, sequence_lengths)
 
-      loop_batch = jax.tree_map(
+      loop_batch = jax.tree.map(
           functools.partial(_crop_sequences, lengths=slice_end), batch)
       loop_logits = self._compute_logits(
           params=params, batch=loop_batch, dropout_rng=None)

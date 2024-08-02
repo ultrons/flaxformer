@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC.
+# Copyright 2024 Google LLC.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -518,7 +518,7 @@ class MoeArchitectureTest(parameterized.TestCase):
 
       # Verify model keys and param shapes for scan.
       self.assertEqual(
-          jax.tree_map(jnp.shape, variables['params']['encoder']),
+          jax.tree.map(jnp.shape, variables['params']['encoder']),
           flax.core.FrozenDict({
               'encoder': {
                   'subblock_0': {
@@ -611,7 +611,7 @@ class MoeArchitectureTest(parameterized.TestCase):
           }))
 
       self.assertEqual(
-          jax.tree_map(jnp.shape, variables['params']['decoder']),
+          jax.tree.map(jnp.shape, variables['params']['decoder']),
           flax.core.FrozenDict({
               'decoder': {
                   'subblock_0': {

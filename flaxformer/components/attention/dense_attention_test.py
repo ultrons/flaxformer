@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC.
+# Copyright 2024 Google LLC.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -1500,7 +1500,7 @@ class AttentionTest(parameterized.TestCase):
       }
 
     self.assertDictEqual(
-        jax.tree_map(lambda a: a.tolist(), unfreeze(params['params'])),
+        jax.tree.map(lambda a: a.tolist(), unfreeze(params['params'])),
         expected_params,
     )
 
@@ -1718,7 +1718,7 @@ class QuantizedAttentionTest(parameterized.TestCase):
     result, params = module.init_with_output(
         random.PRNGKey(0), inputs_q, inputs_kv, enable_dropout=False
     )
-    jax.tree_map(
+    jax.tree.map(
         functools.partial(np.testing.assert_allclose, rtol=1e-6),
         unfreeze(params),
         expected_params,
@@ -1839,7 +1839,7 @@ class QuantizedAttentionTest(parameterized.TestCase):
             },
         },
     }
-    jax.tree_map(
+    jax.tree.map(
         functools.partial(np.testing.assert_allclose, rtol=1e-6),
         unfreeze(params),
         expected_params,

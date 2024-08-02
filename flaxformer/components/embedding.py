@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC.
+# Copyright 2024 Google LLC.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ from flax.linen import partitioning
 import jax
 from jax import lax
 from jax import numpy as jnp
+from jax import tree_util
 
 from flaxformer.components import initializers
 from flaxformer.types import Array
@@ -376,7 +377,7 @@ class MultiEmbed(nn.Module):
       return jax.tree_util.tree_reduce(
           lambda total, embedding: total + embedding, embeddings)
     elif combine_method == EmbedCombineMethod.CONCAT:
-      return jnp.concatenate(jax.tree_leaves(embeddings), axis=-1)
+      return jnp.concatenate(tree_util.tree_leaves(embeddings), axis=-1)
     else:
       raise ValueError((
           f'Invalid combine_method {combine_method} given to combine_embeddings'
