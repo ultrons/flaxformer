@@ -18,7 +18,7 @@ from t5x import adafactor
 
 ARCHITECTURE = %gin.REQUIRED
 
-include 'flaxformer/t5x/configs/moe/models/tokens_choose_base.gin'
+include 'flaxformer/t5x/configs/moe/models/tokens_choose_decoder_only.gin'
 
 # Architecture overrides
 MLP_DIM = 3072
